@@ -1,4 +1,4 @@
-import { Indexes, Point } from "./Indexes.js";
+import { Indexes, Point } from "../js/Indexes.js";
 
 export default class Pathfinder {
     static COLLISION_VALUE = -1;
