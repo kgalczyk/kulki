@@ -1,4 +1,3 @@
-import Ball from "./Ball.js";
 import { Indexes } from "./Indexes.js";
 
 export default class Cell {
@@ -9,16 +8,21 @@ export default class Cell {
     }
     private x: number;
     private y: number;
+    private id: string;
 
     constructor(indexes: Indexes) {
         this.x = indexes.x;
         this.y = indexes.y;
+        this.id = this.x + "_" + this.y;
     }
 
     toHTMLElement = (): HTMLDivElement => {
         const div = document.createElement("div");
+        div.id = this.id;
+
         div.style.width = Cell.PROPERTIES.WIDTH + "px";
         div.style.height = Cell.PROPERTIES.HEIGHT + "px";
+
         div.classList.add(Cell.PROPERTIES.CLASSNAME);
         return div;
     }
@@ -28,6 +32,10 @@ export default class Cell {
             x: this.getX(),
             y: this.getY(),
         };
+    }
+
+    getId() {
+        return this.id;
     }
 
     getX() {

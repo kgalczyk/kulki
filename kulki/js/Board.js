@@ -1,3 +1,4 @@
+import BallsController from "./BallsController.js";
 import Cell from "./Cell.js";
 export default class Board {
     constructor(boardWidth, boardHeight) {
@@ -9,7 +10,7 @@ export default class Board {
                     this.cells.push(new Cell({ x: width, y: height }));
                 }
             }
-            console.log(this.cells);
+            // console.log(this.cells);
         };
         this.renderCells = () => {
             for (let cellIndex = 0; cellIndex < this.cells.length; cellIndex++) {
@@ -19,8 +20,11 @@ export default class Board {
         };
         this.width = boardWidth;
         this.height = boardHeight;
+        this.createCells();
+        this.renderCells();
+        this.ballsController = new BallsController(this.cells);
+        this.ballsController.generateRandomBall();
+        this.ballsController.renderBalls();
     }
 }
 const board = new Board(10, 10);
-board.createCells();
-board.renderCells();
