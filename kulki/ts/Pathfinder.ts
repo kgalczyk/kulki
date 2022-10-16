@@ -1,4 +1,4 @@
-import { Indexes, Point } from "../js/Indexes.js";
+import { Indexes, Point } from "./Indexes.js";
 
 export default class Pathfinder {
     static COLLISION_VALUE = -1;
@@ -16,7 +16,6 @@ export default class Pathfinder {
 
         this.helperArray.push(newPoint);
         if (this.getPointValue(newPoint) > 1 + this.getPointValue(point)) {
-
         }
 
         this.setPointValue(newPoint, this.getPointValue(point));

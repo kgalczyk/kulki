@@ -1,4 +1,4 @@
-import { Point } from "../js/Indexes.js";
+import { Point } from "./Indexes.js";
 export default class Pathfinder {
     constructor(table) {
         this.helperArray = [];
