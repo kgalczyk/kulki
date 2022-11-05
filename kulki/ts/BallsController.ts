@@ -1,13 +1,19 @@
-import Ball from "./Ball.js";
-import Cell from "./Cell.js";
-import generateRandomNumber from "./generateRandomNumber.js";
+import Ball from "./Ball";
+import Cell from "./Cell";
+import generateRandomNumber from "./generateRandomNumber";
+import { Indexes } from "./Indexes";
+import Pathfinder from "./Pathfinder";
 
 export default class BallsController {
     private balls: Ball[] = [];
     private cells: Cell[] = [];
+    private cellsNumericArray: number[] = [];
+    private pathFinder: Pathfinder;
 
     constructor(cells: Cell[]) {
         this.cells = cells;
+
+        this.cellsNumericArray = this.cells.map(cell => { return cell.getNumericValue() });
     }
 
     renderBalls = (): void => {
@@ -25,12 +31,20 @@ export default class BallsController {
         })
     }
 
-    generateRandomBall = () => {
+    generateRandomBall = (): void => {
         this.balls.push(new Ball(
             {
                 x: generateRandomNumber(10, 0),
                 y: generateRandomNumber(10, 0)
             }
         ));
+    }
+
+    updateNumericArray = (value: number, indexes: Indexes): void => {
+        this.cellsNumericArray[indexes.x * indexes.y - 1] = value;
+    }
+
+    getNumericArray = (): number[] => {
+        return this.cellsNumericArray;
     }
 }

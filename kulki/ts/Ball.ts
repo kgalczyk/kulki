@@ -1,5 +1,5 @@
-import Cell from "./Cell.js";
-import { Indexes } from "./Indexes.js";
+import Cell from "./Cell";
+import { Indexes } from "./Indexes";
 
 export default class Ball extends Cell {
     static PROPERTIES = {
@@ -7,7 +7,7 @@ export default class Ball extends Cell {
         HEIGHT: 25,
         EMBIGGEN_SIZE: 40,
         CLASSNAME: "ball",
-        COLOR: ['black', 'purple', 'red', 'yellow', 'green', 'white'],
+        COLOR: ['black', 'purple', 'red', 'yellow', 'green', 'white', 'orange'],
     }
 
     private color: string;

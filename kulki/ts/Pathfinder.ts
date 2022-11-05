@@ -1,6 +1,56 @@
-import { Indexes, Point } from "./Indexes.js";
-
 export default class Pathfinder {
+    graph: number[][];
+    source: number;
+
+    constructor(graph: number[][], source: number) {
+        this.graph = graph;
+        this.source = source;
+        console.log(this.graph.length);
+    }
+
+    getShortestPath = () => {
+        const count = this.graph.length;
+        const visitedVertex: boolean[] = []; // o dlugosci count
+        const distance: number[] = []; // o dlugosci count
+
+        for (let i = 0; i < count; i++) {
+            visitedVertex[i] = false;
+            distance[i] = Number.POSITIVE_INFINITY;
+        }
+
+        distance[this.source] = 0;
+
+        for (let i = 0; i < count; i++) {
+            const minimalDistance = this.getMinimalDistance(distance, visitedVertex);
+            visitedVertex[minimalDistance] = true;
+
+            for (let j = 0; j < count; j++) {
+                if (!visitedVertex[j] && this.graph[i][j] != 0 && (distance[i] + this.graph[i][j] < distance[j])) {
+                    distance[j] = distance[i] + this.graph[i][j];
+                }
+            }
+        }
+
+        for (let i = 0; i < distance.length; i++) {
+            console.log(distance[i]);
+        }
+    }
+
+    getMinimalDistance = (distance: number[], visitedVertex: boolean[]): number => {
+        let minimalDistance = Number.MAX_VALUE;
+        let minimalDistanceVertex = -1;
+        for (let i = 0; i < distance.length; i++) {
+            if (!visitedVertex[i] && distance[i] < minimalDistance) {
+                minimalDistance = distance[i];
+                minimalDistanceVertex = i;
+            }
+        }
+
+        return minimalDistanceVertex;
+    }
+}
+
+/*export default class Pathfinder {
     static COLLISION_VALUE = -1;
     private table: number[][];
     private helperArray: Point[] = [];
@@ -79,4 +129,4 @@ export default class Pathfinder {
     setPointValue = (point: Point, value: number) => {
         this.table[point.x][point.y] = value + 1;
     }
-}
+}*/

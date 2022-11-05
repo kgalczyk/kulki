@@ -1,5 +1,5 @@
-import BallsController from "./BallsController.js";
-import Cell from "./Cell.js";
+import BallsController from "./BallsController";
+import Cell from "./Cell";
 
 export default class Board {
     private boardElement = document.getElementById("board") as HTMLDivElement;
@@ -17,12 +17,13 @@ export default class Board {
         this.ballsController = new BallsController(this.cells);
         this.ballsController.generateRandomBall();
         this.ballsController.renderBalls();
+
     }
 
     createCells = (): void => {
         for (let width = 0; width < this.width; width++) {
             for (let height = 0; height < this.height; height++) {
-                this.cells.push(new Cell({ x: width, y: height }));
+                this.cells.push(new Cell({ x: width, y: height }, 0));
             }
         }
         // console.log(this.cells);
@@ -36,4 +37,4 @@ export default class Board {
     }
 }
 
-const board: Board = new Board(10, 10);
+const board: Board = new Board(9, 9);

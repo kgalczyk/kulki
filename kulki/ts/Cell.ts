@@ -1,4 +1,4 @@
-import { Indexes } from "./Indexes.js";
+import { Indexes } from "./Indexes";
 
 export default class Cell {
     static PROPERTIES = {
@@ -10,10 +10,14 @@ export default class Cell {
     private y: number;
     private id: string;
 
-    constructor(indexes: Indexes) {
+    private numericValue: number;
+
+    constructor(indexes: Indexes, numericValue?: number) {
         this.x = indexes.x;
         this.y = indexes.y;
         this.id = this.x + "_" + this.y;
+
+        this.numericValue = numericValue;
     }
 
     toHTMLElement = (): HTMLDivElement => {
@@ -52,5 +56,13 @@ export default class Cell {
 
     setY(y: number) {
         this.y = y;
+    }
+
+    getNumericValue = () => {
+        return this.numericValue;
+    }
+
+    setNumericValue = (value: number) => {
+        this.numericValue = value;
     }
 }
