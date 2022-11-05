@@ -18,7 +18,7 @@
     float: left;
 }
 
-.cell:nth-child(10n+1) {
+.cell:nth-child(9n+1) {
     clear: both;
 }
 
