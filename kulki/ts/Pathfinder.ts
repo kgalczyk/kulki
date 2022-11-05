@@ -2,9 +2,8 @@ export default class Pathfinder {
     graph: number[][];
     source: number;
 
-    constructor(graph: number[][], source: number) {
+    constructor(graph: number[][]) {
         this.graph = graph;
-        this.source = source;
         console.log(this.graph.length);
     }
 

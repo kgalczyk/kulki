@@ -18,6 +18,22 @@
     float: left;
 }
 
+.cell-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+#preview {
+    width: 150px;
+    flex-direction: row;
+    flex: 1;
+    display: flex;
+}
+
+
+
 .cell:nth-child(9n+1) {
     clear: both;
 }

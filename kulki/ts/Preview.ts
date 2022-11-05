@@ -5,12 +5,14 @@ export default class Preview {
     private previewedBalls: Ball[] = [];
     constructor() {
         this.previewElement = document.getElementById("preview") as HTMLDivElement;
-        this.previewElement.innerText = "next:";
     }
 
     renderPreview = (): void => {
         this.previewedBalls.forEach((ball, index) => {
-            this.previewElement.childNodes[index].appendChild(ball.toHTMLElement());
+            // console.log(ball);
+            const div = this.previewElement.children[index];
+            div.innerHTML = '';
+            div.appendChild(ball.toHTMLElement());
         })
     }
 

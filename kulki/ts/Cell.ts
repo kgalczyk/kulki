@@ -9,6 +9,7 @@ export default class Cell {
     private x: number;
     private y: number;
     private id: string;
+    public hasBall: boolean = false;
 
     private numericValue: number;
 
@@ -42,6 +43,10 @@ export default class Cell {
         return this.id;
     }
 
+    setId(id: string) {
+        this.id = id;
+    }
+
     getX() {
         return this.x;
     }
@@ -64,5 +69,9 @@ export default class Cell {
 
     setNumericValue = (value: number) => {
         this.numericValue = value;
+    }
+
+    getDiv = (): HTMLDivElement => {
+        return document.getElementById(this.getId()) as HTMLDivElement;
     }
 }
