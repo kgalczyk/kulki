@@ -2,26 +2,23 @@ import Ball from "./Ball";
 import Cell from "./Cell";
 import generateRandomNumber from "./generateRandomNumber";
 import { Indexes } from "./Indexes";
-import Pathfinder from "./Pathfinder";
 import Preview from "./Preview";
 
 export default class BallsController {
     private width: number;
     private height: number;
-    private balls: Ball[] = [];
+    public balls: Ball[] = [];
     private cells: Cell[] = [];
     private numericCellsArray: number[][] = [];
-    private numericCellsArrayElement: HTMLDivElement;
     public hoveredIndexes: Indexes;
     private preview = new Preview();
-    private AMOUNT_OF_PREVIEWED_BALLS = 3;
+    private readonly AMOUNT_OF_PREVIEWED_BALLS = 3;
 
     constructor(cells: Cell[], width: number, height: number) {
         this.width = width;
         this.height = height;
         this.cells = cells;
         this.balls = this.getPreviewedBalls(false);
-        this.numericCellsArrayElement = document.getElementById("numeric-array") as HTMLDivElement;
         this.createNumericCellsArray();
         // this.pathFinder = new Pathfinder(this.numericCellsArray);
         this.renderBalls();
@@ -54,6 +51,7 @@ export default class BallsController {
             cellElement.innerHTML = '';
             cellElement.appendChild(ball.toHTMLElement());
             this.updateNumericArray(-1, { x: cell.getX(), y: cell.getY() });
+            ball.setBalls(this.balls);
         })
     }
 

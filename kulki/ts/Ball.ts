@@ -1,5 +1,6 @@
 import Cell from "./Cell";
 import { Indexes } from "./Indexes";
+import generateRandomNumber from "./generateRandomNumber";
 
 export default class Ball extends Cell {
     static PROPERTIES = {
@@ -9,7 +10,6 @@ export default class Ball extends Cell {
         CLASSNAME: "ball",
         COLOR: ['blue', 'purple', 'red', 'yellow', 'green', 'white', 'orange'],
     }
-
     private color: string;
     private STATE: boolean = false;
     private balls: Ball[];
@@ -21,7 +21,7 @@ export default class Ball extends Cell {
         super(indexes);
         this.isPreviewed = toPreview;
         this.balls = balls;
-        this.color = Ball.PROPERTIES.COLOR[Math.floor(Math.random() * Ball.PROPERTIES.COLOR.length)];
+        this.color = Ball.PROPERTIES.COLOR[generateRandomNumber(Ball.PROPERTIES.COLOR.length - 1, 0)];
     }
 
     private changeSize = (div: HTMLDivElement): void => {
@@ -41,15 +41,20 @@ export default class Ball extends Cell {
         this.div = div;
         div.onclick = () => {
             if (this.isPreviewed) return;
-            const selectedBall = this.getBalls().find(ball => ball.getState() == true);
-            if (selectedBall && selectedBall.getId() != this.getId()) {
-                selectedBall.setState(false);
-                selectedBall.changeSize(selectedBall.getDiv());
-            }
+            this.clearBallStates();
             this.STATE = !this.STATE;
             this.changeSize(div);
         }
         return div;
+    }
+
+    private clearBallStates = () => {
+        this.balls.forEach(ball => {
+            if (ball.getId() != this.getId()) {
+                ball.setState(false);
+                ball.changeSize(ball.getDiv());
+            }
+        })
     }
 
     public getState = (): boolean => {

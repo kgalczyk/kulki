@@ -6,8 +6,8 @@ export default class Cell {
         HEIGHT: 50,
         CLASSNAME: "cell"
     }
-    private x: number;
-    private y: number;
+    private readonly x: number;
+    private readonly y: number;
     private id: string;
     public hasBall: boolean = false;
 
@@ -51,18 +51,9 @@ export default class Cell {
         return this.x;
     }
 
-    setX(x: number) {
-        this.x = x;
-    }
-
     getY() {
         return this.y;
     }
-
-    setY(y: number) {
-        this.y = y;
-    }
-
     getNumericValue = () => {
         return this.numericValue;
     }

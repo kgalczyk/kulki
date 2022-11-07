@@ -25,14 +25,12 @@ class Node {
 }
 
 export default class Pathfinder {
-    graph: number[][];
-    queue: Node[];
-    nodes: Node[][] = [];
-    visitedNodes: string[] = [];
-    xDirections: number[] = [-1, 0, 1, 0];
-    yDirections: number[] = [0, 1, 0, -1];
-    endIndexes: Indexes;
-    sourceIndexes: Indexes;
+    private graph: number[][];
+    private queue: Node[];
+    private nodes: Node[][] = [];
+    private visitedNodes: string[] = [];
+    private readonly xDirections: number[] = [-1, 0, 1, 0];
+    private readonly yDirections: number[] = [0, 1, 0, -1];
     constructor(graph: number[][]) {
         this.graph = graph;
         this.nodes = [];
@@ -64,8 +62,6 @@ export default class Pathfinder {
 
     findShortestPath = (sourceIndexes: Indexes, endIndexes: Indexes): Path => {
         const { x, y } = sourceIndexes;
-        this.sourceIndexes = sourceIndexes;
-        this.endIndexes = endIndexes;
         let startNode: Node = this.nodes[x][y];
         startNode.parent = startNode;
         startNode.visited = true;
@@ -102,13 +98,11 @@ export default class Pathfinder {
         let x = node.x;
         let y = node.y;
         let parent = node.parent;
-        if (parent.x == x && parent.y == y) return;
         if (node.visited) return;
         node.visited = true;
         this.visitedNodes.push(x + "_" + y);
         let path = parent.path;
-        // console.log("ścieżka parenta:", path);
-
+        if (parent.x == x && parent.y == y) return;
         // do ścieżki poprzednika dorzucamy jego indeksy indeksy 
         path.push({ x: parent.x, y: parent.y });
         node.path.push(...path);

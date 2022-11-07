@@ -19,6 +19,7 @@ export default class Board {
         this.ballsController = new BallsController(this.cells, this.width, this.height);
         this.setListeners();
         this.pathFinder = new Pathfinder(this.ballsController.getNumericArray());
+        this.path = [];
     }
 
     private setListeners = () => {
@@ -26,9 +27,11 @@ export default class Board {
             const div = this.getCellDivElement(cell);
             div.onclick = () => {
                 //    console.log(cell.hasBall);
-                this.path = [];
-                this.pathFinder.colorDivs(this.path);
+                this.pathFinder.colorDivs([]);
                 if (cell.hasBall) return; // zwracamy, żeby nie wykonywało nic poza klikiem w kulkę
+                if (this.path.length == 0) {
+                    console.log("brak ścieżki");
+                };
                 this.ballsController.updateBalls(div, cell);
             }
         })
@@ -38,13 +41,15 @@ export default class Board {
             const cell = this.cells.find(cell => { if (cell.getId() == target.id) return cell; });
             if (cell) this.ballsController.hoveredIndexes = cell.toJson();
             const selectedBall = this.ballsController.getBalls().find(ball => ball.getState() == true); // znajdujemy wybraną kulkę
-
             this.path = [];
+
             if (!selectedBall) {
                 this.clearCellColors();
                 return;
             };
             this.path = this.pathFinder.findShortestPath({ x: selectedBall.getX(), y: selectedBall.getY() }, this.ballsController.hoveredIndexes);
+            // console.log(this.path);
+
             this.cells.forEach(cell => this.ballsController.updateNumericArray(cell.hasBall ? -1 : 1, { x: cell.getX(), y: cell.getY() }));
         }
     }
