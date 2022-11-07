@@ -1,131 +1,144 @@
-export default class Pathfinder {
-    graph: number[][];
-    source: number;
+import { Indexes } from "./Indexes";
 
-    constructor(graph: number[][]) {
-        this.graph = graph;
-        console.log(this.graph.length);
-    }
+interface Neighbors {
+    up: Indexes,
+    down: Indexes,
+    right: Indexes,
+    left: Indexes
+}
 
-    getShortestPath = () => {
-        const count = this.graph.length;
-        const visitedVertex: boolean[] = []; // o dlugosci count
-        const distance: number[] = []; // o dlugosci count
+export type Path = Indexes[];
 
-        for (let i = 0; i < count; i++) {
-            visitedVertex[i] = false;
-            distance[i] = Number.POSITIVE_INFINITY;
-        }
-
-        distance[this.source] = 0;
-
-        for (let i = 0; i < count; i++) {
-            const minimalDistance = this.getMinimalDistance(distance, visitedVertex);
-            visitedVertex[minimalDistance] = true;
-
-            for (let j = 0; j < count; j++) {
-                if (!visitedVertex[j] && this.graph[i][j] != 0 && (distance[i] + this.graph[i][j] < distance[j])) {
-                    distance[j] = distance[i] + this.graph[i][j];
-                }
-            }
-        }
-
-        for (let i = 0; i < distance.length; i++) {
-            console.log(distance[i]);
-        }
-    }
-
-    getMinimalDistance = (distance: number[], visitedVertex: boolean[]): number => {
-        let minimalDistance = Number.MAX_VALUE;
-        let minimalDistanceVertex = -1;
-        for (let i = 0; i < distance.length; i++) {
-            if (!visitedVertex[i] && distance[i] < minimalDistance) {
-                minimalDistance = distance[i];
-                minimalDistanceVertex = i;
-            }
-        }
-
-        return minimalDistanceVertex;
+class Node {
+    public parent: Node;
+    public x: number;
+    public y: number;
+    public numericValue: number;
+    public visited: boolean;;
+    public path: Path; // Indexes[]
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.visited = false;
+        this.path = [];
     }
 }
 
-/*export default class Pathfinder {
-    static COLLISION_VALUE = -1;
-    private table: number[][];
-    private helperArray: Point[] = [];
-    constructor(table: number[][]) {
-        this.table = table;
-    }
-
-    findPath = (startPoint: Indexes, weight: number, endPoint: Indexes) => {
-        // mamy punkt
-        const point = new Point(startPoint);
-        // sprawdzamy, czy obok jest wolne pole
-        const newPoint = this.getRandomNeighborPoint(point);
-
-        this.helperArray.push(newPoint);
-        if (this.getPointValue(newPoint) > 1 + this.getPointValue(point)) {
-        }
-
-        this.setPointValue(newPoint, this.getPointValue(point));
-
-        console.log(this.table);
-
-        // jeśli jest wolny, wybieramy go jako następny punkt
-        // jeśli nie, wybieramy kolejny
-        // sprawdzamy, czy punkt był sprawdzany
-        // sprawdzamy czy jest w obrębie tablicy
-        if (this.compare(newPoint, new Point(endPoint))) {
-            return;
+export default class Pathfinder {
+    graph: number[][];
+    queue: Node[];
+    nodes: Node[][] = [];
+    visitedNodes: string[] = [];
+    xDirections: number[] = [-1, 0, 1, 0];
+    yDirections: number[] = [0, 1, 0, -1];
+    endIndexes: Indexes;
+    sourceIndexes: Indexes;
+    constructor(graph: number[][]) {
+        this.graph = graph;
+        this.nodes = [];
+        this.queue = [];
+        for (let i = 0; i < this.graph.length; i++) {
+            this.nodes[i] = [];
+            for (let j = 0; j < this.graph.length; j++) {
+                this.nodes[i][j] = new Node(i, j);
+                // this.findNeighbors(this.nodes[i][j]);
+                if (this.graph[i][j] == -1) this.nodes[i][j].numericValue = -1;
+                else this.nodes[i][j].numericValue = 0;
+            }
         }
     }
 
-    getRandomNeighborPoint = (point: Point) => {
-        const newPoint = new Point(point);
-        const randomAxis = Math.random();
-        const randomDirection = Math.random();
-
-        if (randomAxis < 0.5)
-            if (randomDirection < 0.5)
-                newPoint.x++;
-            else
-                newPoint.x--;
-        else
-            if (randomDirection < 0.5)
-                newPoint.y++;
-            else
-                newPoint.y--;
-
-        // sprawdzenie, czy jest w granicach tablicy
-        if (!this.checkBoundaries(newPoint) ||
-            // sprawdzenie, czy juz przez niego przechodziliśmy
-            this.wasChecked(newPoint) ||
-            // sprawdzenie, czy nie ma tam przypadkiem kulki (-1 w tablicy)
-            this.getPointValue(newPoint) === Pathfinder.COLLISION_VALUE)
-            return this.getRandomNeighborPoint(point);
-
-        return newPoint;
+    clearNodes = () => {
+        for (let i = 0; i < this.graph.length; i++) {
+            for (let j = 0; j < this.graph.length; j++) {
+                const node = this.nodes[i][j];
+                node.visited = false;
+                node.path = [];
+                // this.findNeighbors(this.nodes[i][j]);
+                if (this.graph[i][j] == -1) this.nodes[i][j].numericValue = -1;
+                else this.nodes[i][j].numericValue = 0;
+            }
+        }
     }
 
-    checkBoundaries = (point: Point) => {
-        return (point.x < this.table.length && point.x >= 0 && point.y < this.table[0].length && point.y >= 0)
+
+    findShortestPath = (sourceIndexes: Indexes, endIndexes: Indexes): Path => {
+        const { x, y } = sourceIndexes;
+        this.sourceIndexes = sourceIndexes;
+        this.endIndexes = endIndexes;
+        let startNode: Node = this.nodes[x][y];
+        startNode.parent = startNode;
+        startNode.visited = true;
+
+        if (x == endIndexes.x && y == endIndexes.y) return [];
+        this.visitedNodes = [];
+        this.queue = [];
+        this.queue.push(startNode);
+        while (this.queue.length > 0) {
+            let currentNode = this.queue[0];
+
+            this.visitNode(currentNode);
+            this.queue.shift();
+            if (currentNode.x == endIndexes.x && currentNode.y == endIndexes.y) {
+                currentNode.path.push({ x: currentNode.x, y: currentNode.y });
+                this.colorDivs(currentNode.path);
+                return currentNode.path;
+            };
+            for (let i = 0; i < this.xDirections.length; i++) {
+                let adjacentX = currentNode.x + this.xDirections[i];
+                let adjacentY = currentNode.y + this.yDirections[i];
+                if (this.isValid(adjacentX, adjacentY)) {
+                    this.queue.push(this.nodes[adjacentX][adjacentY]);
+                    this.nodes[adjacentX][adjacentY].parent = currentNode;
+                }
+            }
+        }
+        this.colorDivs(this.nodes[endIndexes.x][endIndexes.y].path);
+        this.clearNodes();
+        return [];
     }
 
-    wasChecked = (checkedPoint: Point) => {
-        if (this.helperArray.find((point: Point) => { point.x === checkedPoint.x && point.y === checkedPoint.y }))
-            return true;
-        return false;
+    visitNode = (node: Node): void => {
+        let x = node.x;
+        let y = node.y;
+        let parent = node.parent;
+        if (parent.x == x && parent.y == y) return;
+        if (node.visited) return;
+        node.visited = true;
+        this.visitedNodes.push(x + "_" + y);
+        let path = parent.path;
+        // console.log("ścieżka parenta:", path);
+
+        // do ścieżki poprzednika dorzucamy jego indeksy indeksy 
+        path.push({ x: parent.x, y: parent.y });
+        node.path.push(...path);
     }
 
-    compare = (point: Point, point2: Point) => {
-        return point.x === point2.x && point.y === point2.y;
+    colorDivs = (path: Path) => {
+        for (let x = 0; x < this.graph.length; x++) {
+            for (let y = 0; y < this.graph.length; y++) {
+                const div = document.getElementById(x + "_" + y);
+                div.style.backgroundColor = "white";
+                let index = path.find((elem) => { return elem.x == x && elem.y == y });
+                if (index) div.style.backgroundColor = "red";
+            }
+        }
+
+        // for (let x = 0; x < this.graph.length; x++) {
+        //     for (let y = 0; y < this.graph.length; y++) {
+        //         const div = document.getElementById(x + "_" + y);
+        //         let visited = this.visitedNodes.find(node => node == x + "_" + y);
+        //         if (visited) div.style.backgroundColor = "green";
+        //         let index = path.find((elem) => { return elem.x == x && elem.y == y });
+        //         if (index) div.style.backgroundColor = "red";
+        //     }
+        // }
     }
 
-    getPointValue = (point: Point) => {
-        return this.table[point.x][point.y];
+    isValid = (x: number, y: number): boolean => {
+        if (x < 0 || y < 0 || x >= this.graph.length || y >= this.graph[0].length) return false;
+        if (this.nodes[x][y].visited) return false;
+        if (this.nodes[x][y].numericValue == -1) return false;
+        return true;
     }
-
-    setPointValue = (point: Point, value: number) => {
-        this.table[point.x][point.y] = value + 1;
-    }
-}*/
+} 

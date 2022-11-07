@@ -11,8 +11,8 @@ export default class BallsController {
     private balls: Ball[] = [];
     private cells: Cell[] = [];
     private numericCellsArray: number[][] = [];
-
-    private pathFinder: Pathfinder;
+    private numericCellsArrayElement: HTMLDivElement;
+    public hoveredIndexes: Indexes;
     private preview = new Preview();
     private AMOUNT_OF_PREVIEWED_BALLS = 3;
 
@@ -21,8 +21,9 @@ export default class BallsController {
         this.height = height;
         this.cells = cells;
         this.balls = this.getPreviewedBalls(false);
+        this.numericCellsArrayElement = document.getElementById("numeric-array") as HTMLDivElement;
         this.createNumericCellsArray();
-        this.pathFinder = new Pathfinder(this.numericCellsArray);
+        // this.pathFinder = new Pathfinder(this.numericCellsArray);
         this.renderBalls();
         this.changePreview();
     }
@@ -37,7 +38,7 @@ export default class BallsController {
     }
 
     private renderBalls = (): void => {
-        // console.log("render kulek", this.balls);
+        console.log(`render ${this.balls.length} kulek`);
         this.balls.forEach((ball: Ball) => {
             const cell = this.cells.find((cell: Cell) => {
                 if (cell.getX() === ball.getX() &&
@@ -48,10 +49,11 @@ export default class BallsController {
                 }
             });
             if (!cell) return;
-            const cellId = document.getElementById(cell.getId());
-            cellId.innerHTML = '';
-            cellId.appendChild(ball.toHTMLElement());
-            this.updateNumericArray(Number.POSITIVE_INFINITY, { x: cell.getX(), y: cell.getY() });
+
+            const cellElement = document.getElementById(cell.getId());
+            cellElement.innerHTML = '';
+            cellElement.appendChild(ball.toHTMLElement());
+            this.updateNumericArray(-1, { x: cell.getX(), y: cell.getY() });
         })
     }
 
@@ -79,23 +81,23 @@ export default class BallsController {
     }
 
     public updateBalls = (div: HTMLDivElement, cell: Cell) => {
-        this.pathFinder.getShortestPath();
         const selectedBall = this.balls.find(ball => ball.getState() == true); // znajdujemy wybraną kulkę
+        if (!selectedBall) return;
         const selectedCell = this.cells.find(cell => cell.getId() == selectedBall.getId());
         selectedBall.getParentDiv().innerHTML = '';
         selectedCell.hasBall = false;
-        if (!selectedBall) return;
-        // teraz musimy usunąć wybraną kulkę, usunąć elementhtml wybranej kulki z diva w którym się znajdowała
+
         const newBall = new Ball({ x: cell.getX(), y: cell.getY() }, this.balls, false);
         newBall.setColor(selectedBall.getColor());
         newBall.setParentDiv(div);
+
         this.balls = this.balls.filter(ball => ball.getId() != selectedBall.getId());
         this.balls.push(newBall);
         this.renderBalls();
         this.changePreview();
     }
 
-    private updateNumericArray = (value: number, indexes: Indexes): void => {
+    public updateNumericArray = (value: number, indexes: Indexes): void => {
         this.numericCellsArray[indexes.x][indexes.y] = value;
     }
 

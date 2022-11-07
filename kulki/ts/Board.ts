@@ -1,5 +1,6 @@
 import BallsController from "./BallsController";
 import Cell from "./Cell";
+import Pathfinder, { Path } from "./Pathfinder";
 
 export default class Board {
     private boardElement = document.getElementById("board") as HTMLDivElement;
@@ -7,6 +8,8 @@ export default class Board {
     private height: number;
     private cells: Cell[] = [];
     private ballsController: BallsController;
+    private pathFinder: Pathfinder;
+    private path: Path;
 
     constructor(boardWidth: number, boardHeight: number) {
         this.width = boardWidth;
@@ -15,6 +18,7 @@ export default class Board {
         this.renderCells();
         this.ballsController = new BallsController(this.cells, this.width, this.height);
         this.setListeners();
+        this.pathFinder = new Pathfinder(this.ballsController.getNumericArray());
     }
 
     private setListeners = () => {
@@ -22,10 +26,27 @@ export default class Board {
             const div = this.getCellDivElement(cell);
             div.onclick = () => {
                 //    console.log(cell.hasBall);
+                this.path = [];
+                this.pathFinder.colorDivs(this.path);
                 if (cell.hasBall) return; // zwracamy, żeby nie wykonywało nic poza klikiem w kulkę
                 this.ballsController.updateBalls(div, cell);
             }
         })
+
+        this.boardElement.onmousemove = (event) => {
+            const target = event.target as HTMLDivElement;
+            const cell = this.cells.find(cell => { if (cell.getId() == target.id) return cell; });
+            if (cell) this.ballsController.hoveredIndexes = cell.toJson();
+            const selectedBall = this.ballsController.getBalls().find(ball => ball.getState() == true); // znajdujemy wybraną kulkę
+
+            this.path = [];
+            if (!selectedBall) {
+                this.clearCellColors();
+                return;
+            };
+            this.path = this.pathFinder.findShortestPath({ x: selectedBall.getX(), y: selectedBall.getY() }, this.ballsController.hoveredIndexes);
+            this.cells.forEach(cell => this.ballsController.updateNumericArray(cell.hasBall ? -1 : 1, { x: cell.getX(), y: cell.getY() }));
+        }
     }
 
     private createCells = (): void => {
@@ -42,6 +63,10 @@ export default class Board {
             const cell: Cell = this.cells[cellIndex];
             this.boardElement.appendChild(cell.toHTMLElement());
         }
+    }
+
+    private clearCellColors = () => {
+        this.cells.forEach(cell => { document.getElementById(cell.getId()).style.backgroundColor = "white" });
     }
 
     public getCellDivElement = (cell: Cell): HTMLDivElement => {
