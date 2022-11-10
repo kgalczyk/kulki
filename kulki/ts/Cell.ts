@@ -21,7 +21,7 @@ export default class Cell {
         this.numericValue = numericValue;
     }
 
-    toHTMLElement = (): HTMLDivElement => {
+    toHTMLElement() {
         const div = document.createElement("div");
         div.id = this.id;
 

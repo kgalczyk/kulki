@@ -3,6 +3,7 @@ export type Indexes = {
     y: number
 }
 
+/** @deprecated xd I don't know why it takes space on my disk and on Github. I don't also know why i comment this class*/
 export class Point {
     x: number;
     y: number;

@@ -20,4 +20,8 @@ export default class Preview {
         this.previewedBalls = balls;
         this.renderPreview();
     }
+
+    public removeListeners = () => {
+        this.previewedBalls.forEach(ball => ball.getDiv().onclick = () => { return; });
+    }
 }

@@ -1,12 +1,4 @@
 import { Indexes } from "./Indexes";
-
-interface Neighbors {
-    up: Indexes,
-    down: Indexes,
-    right: Indexes,
-    left: Indexes
-}
-
 export type Path = Indexes[];
 
 class Node {
@@ -24,6 +16,8 @@ class Node {
     }
 }
 
+/** @module Pathfinder  */
+/** @param graph - 2d matrix of numeric values in which 1 -> empty field -1 -> field with ball inside*/
 export default class Pathfinder {
     private graph: number[][];
     private queue: Node[];
@@ -61,23 +55,32 @@ export default class Pathfinder {
 
 
     findShortestPath = (sourceIndexes: Indexes, endIndexes: Indexes): Path => {
+        // console.group("pathFinding");
+        // console.log("source:", sourceIndexes.x, sourceIndexes.y);
+        // console.log("end:", endIndexes.x, endIndexes.y);
+
         const { x, y } = sourceIndexes;
         let startNode: Node = this.nodes[x][y];
         startNode.parent = startNode;
         startNode.visited = true;
 
-        if (x == endIndexes.x && y == endIndexes.y) return [];
+        if (x == endIndexes.x && y == endIndexes.y) {
+            this.colorDivs([]);
+            //  console.groupEnd();
+            return [];
+        };
         this.visitedNodes = [];
         this.queue = [];
         this.queue.push(startNode);
         while (this.queue.length > 0) {
             let currentNode = this.queue[0];
-
             this.visitNode(currentNode);
             this.queue.shift();
             if (currentNode.x == endIndexes.x && currentNode.y == endIndexes.y) {
                 currentNode.path.push({ x: currentNode.x, y: currentNode.y });
                 this.colorDivs(currentNode.path);
+                // console.log("currentNode");
+                // console.groupEnd();
                 return currentNode.path;
             };
             for (let i = 0; i < this.xDirections.length; i++) {
@@ -90,7 +93,8 @@ export default class Pathfinder {
             }
         }
         this.colorDivs(this.nodes[endIndexes.x][endIndexes.y].path);
-        this.clearNodes();
+        // console.log("path not found");
+        // console.groupEnd();
         return [];
     }
 
